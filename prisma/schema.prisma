@@ -1,12 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,69 +12,98 @@ model Make {
   name      String   @unique @db.VarChar(50)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
-
-  models Model[]
+  models    Model[]
 
   @@map("makes")
 }
 
 model Model {
-  id        Int      @id @default(autoincrement())
-  makeId    Int      @map("make_id")
-  name      String   @db.VarChar(100)
+  id        Int          @id @default(autoincrement())
+  makeId    Int          @map("make_id")
+  name      String       @db.VarChar(100)
   year      Int
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @map("updated_at")
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @default(now()) @map("updated_at")
+  make      Make         @relation(fields: [makeId], references: [id])
+  bulbs     BulbsModel[]
+  parts     PartsModel[]
 
-  parts PartsModel[]
-  bulbs BulbsModel[]
-
-  make Make @relation(fields: [makeId], references: [id])
-
+  @@index([name], map: "models_index_name")
+  @@index([makeId], map: "models_make_id_fkey")
   @@map("models")
 }
 
 model Part {
   id     Int          @id @default(autoincrement())
   name   String       @db.VarChar(100)
-  models PartsModel[]
   bulbs  Bulb[]
+  models PartsModel[]
 
   @@map("parts")
 }
 
 model PartsModel {
-  part    Part  @relation(fields: [partId], references: [id])
   partId  Int   @map("part_id")
-  model   Model @relation(fields: [modelId], references: [id])
   modelId Int   @map("model_id")
+  model   Model @relation(fields: [modelId], references: [id])
+  part    Part  @relation(fields: [partId], references: [id])
 
   @@id([partId, modelId])
+  @@index([modelId], map: "parts_models_model_id_fkey")
   @@map("parts_models")
 }
 
 model Bulb {
-  id           Int     @id @default(autoincrement())
-  descr        String  @db.VarChar(100)
-  partId       Int     @map("part_id")
-  img_platinum String? @db.VarChar(512)
-  url_platinum String? @db.VarChar(512)
-  img_m_series String? @db.VarChar(512)
-  url_m_series String? @db.VarChar(512)
+  id           Int          @id @default(autoincrement())
+  descr        String       @db.VarChar(100)
+  partId       Int          @map("part_id")
+  img_platinum String?      @db.VarChar(512)
+  url_platinum String?      @db.VarChar(512)
+  img_m_series String?      @db.VarChar(512)
+  url_m_series String?      @db.VarChar(512)
+  part         Part         @relation(fields: [partId], references: [id])
+  models       BulbsModel[]
 
-  models BulbsModel[]
-
-  part Part @relation(fields: [partId], references: [id])
-
+  @@index([descr], map: "bulbs_index_descr")
+  @@index([partId], map: "bulbs_part_id_fkey")
   @@map("bulbs")
 }
 
 model BulbsModel {
-  bulb    Bulb  @relation(fields: [bulbId], references: [id])
   bulbId  Int   @map("bulb_id")
-  model   Model @relation(fields: [modelId], references: [id])
   modelId Int   @map("model_id")
+  bulb    Bulb  @relation(fields: [bulbId], references: [id])
+  model   Model @relation(fields: [modelId], references: [id])
 
   @@id([bulbId, modelId])
+  @@index([modelId], map: "bulbs_models_model_id_fkey")
   @@map("bulbs_models")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model temp_data {
+  year            Int?
+  make            String? @db.VarChar(255)
+  model           String? @db.VarChar(255)
+  front_fog_light String? @db.VarChar(255)
+  high_low_beam   String? @db.VarChar(255)
+  low_beam        String? @db.VarChar(255)
+  high_beam       String? @db.VarChar(255)
+
+  @@index([make], map: "make")
+  @@index([make, model], map: "make_model")
+  @@index([model], map: "model")
+  @@index([year], map: "year")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model temp_data_expanded {
+  year      Int?
+  make      String? @db.VarChar(255)
+  model     String? @db.VarChar(255)
+  bulb_code String? @db.VarChar(255)
+  position  String? @db.VarChar(255)
+
+  @@ignore
 }
