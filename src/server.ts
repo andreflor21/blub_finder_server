@@ -82,12 +82,17 @@ app.get('/bulbs', async (req, res) => {
     return res.json(bulbs);
 });
 
-const options = {
-    key: fs.readFileSync('/home/ubuntu/server/privkey.pem'),
-    cert: fs.readFileSync('/home/ubuntu/server/fullchain.pem'),
-};
+// const options = {
+//     key: fs.readFileSync('/home/ubuntu/server/privkey.pem'),
+//     cert: fs.readFileSync('/home/ubuntu/server/fullchain.pem'),
+// };
 
-https.createServer(options, app).listen(3333, () => {
+// https.createServer(options, app).listen(3333, () => {
+//     console.log('app is running on https://0.0.0.0:3333');
+//     console.log('or https://localhost:3333');
+// });
+
+app.listen(3333, () => {
     console.log('app is running on https://0.0.0.0:3333');
     console.log('or https://localhost:3333');
 });
