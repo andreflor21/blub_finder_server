@@ -34,7 +34,7 @@ app.get('/makes', async (req, res) => {
                join makes mk on mk.id = m.make_id
                where m.year = ${yearNum}
                group by mk.id, mk.name
-               order by mk.id`
+               order by mk.name`
     );
 
     return res.json(makes);
@@ -54,6 +54,9 @@ app.get('/models', async (req, res) => {
         select: {
             name: true,
             id: true,
+        },
+        orderBy: {
+            name: 'asc',
         },
     });
 
