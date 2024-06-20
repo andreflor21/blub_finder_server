@@ -10,6 +10,10 @@ app.use(cors());
 
 const prisma = new PrismaClient({});
 
+app.get('/', (req, res) => {
+    return res.json({ message: 'Haizer USA Bulb Finder API' });
+});
+
 app.get('/years', async (req, res) => {
     const years = await prisma.$queryRaw(
         Prisma.sql`select m.year as id, m.year as name from models m  

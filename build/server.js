@@ -19,6 +19,9 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 const prisma = new client_1.PrismaClient({});
+app.get('/', (req, res) => {
+    return res.json({ message: 'Haizer USA Bulb Finder API' });
+});
 app.get('/years', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const years = yield prisma.$queryRaw(client_1.Prisma.sql `select m.year as id, m.year as name from models m  
                group by m.year 
