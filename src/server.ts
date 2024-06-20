@@ -92,7 +92,6 @@ app.get('/bulbs', async (req, res) => {
 //     console.log('or https://localhost:3333');
 // });
 
-app.listen(3333, () => {
-    console.log('app is running on https://0.0.0.0:3333');
-    console.log('or https://localhost:3333');
+app.listen(process.env.PORT, () => {
+    console.log('app is running');
 });
